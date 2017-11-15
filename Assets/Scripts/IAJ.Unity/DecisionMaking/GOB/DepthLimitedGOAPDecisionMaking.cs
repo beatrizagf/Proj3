@@ -1,5 +1,6 @@
 ﻿using Assets.Scripts.GameManager;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
@@ -56,11 +57,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 			//throw new NotImplementedException();
             //(slide: 99)
 
-            float value = 0.0f;
+            float value;
             Action nextAction = null;
 
             while (this.CurrentDepth >= 0)
             {
+                if (this.InProgress == false || processedActions > this.ActionCombinationsProcessedPerFrame)
+                    return null;
+
                 //quando ja tivermos 3 accoes, vamos escolher a melhor (permite a personagem anticipar os efeitos e planear as suas accoes)
                 if (this.CurrentDepth >= MAX_DEPTH)
                 {
@@ -70,33 +74,31 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
                     if (value < this.BestDiscontentmentValue)
                     {
                         this.BestDiscontentmentValue = value;
-                        this.BestAction = this.Actions[0];
-                        //DEPOIS
-                        //this.BestActionSequence[this.CurrentDepth] = this.Actions[0];   //substituimos a nova accao (que e melhor), na sequencia das melhores accoes
+                        this.BestAction = this.ActionPerLevel[0];
+                        this.BestActionSequence = this.ActionPerLevel.ToArray();   //substituimos a nova accao (que e melhor), na sequencia das melhores accoes
                     }
                     this.CurrentDepth -= 1;
                     continue;
                 }
                 //so processo 3 accoes: olho no maximo um futuro de 3 accoes
-                if (processedActions < 3)
-                {
-                    //ve qual a proxima accao que pode ser executada ou da null se nao existirem mais accoes executaveis
-                    nextAction = this.Models[this.CurrentDepth].GetNextAction();
+          
+                //ve qual a proxima accao que pode ser executada ou da null se nao existirem mais accoes executaveis
+                nextAction = this.Models[this.CurrentDepth].GetNextAction();
 
-                    if (nextAction != null)
-                    {
-                        this.Models[this.CurrentDepth + 1] = this.Models[this.CurrentDepth].GenerateChildWorldModel();  //simula o novo estado do mundo consoante esta accao, 
-                        nextAction.ApplyActionEffects(this.Models[this.CurrentDepth + 1]);  //para vermos que accoes vao estar disponiveis
-                        processedActions++;
-                        this.Actions[this.CurrentDepth] = nextAction;   //adicionamos às accoes para depois vermos qual e melhor
-                        this.CurrentDepth += 1;
-                    }
-                    //se nao houver mais accoes, diminuimos CurrentDepth para sairmos do ciclo
-                    else
-                    {
-                        this.CurrentDepth -= 1;
-                    }
+                if (nextAction != null)
+                {
+                    this.Models[this.CurrentDepth + 1] = this.Models[this.CurrentDepth].GenerateChildWorldModel();  //simula o novo estado do mundo consoante esta accao, 
+                    nextAction.ApplyActionEffects(this.Models[this.CurrentDepth + 1]);  //para vermos que accoes vao estar disponiveis
+                    processedActions++;
+                    this.ActionPerLevel[this.CurrentDepth] = nextAction;   //adicionamos às accoes para depois vermos qual e melhor
+                    this.CurrentDepth += 1;
                 }
+                //se nao houver mais accoes, diminuimos CurrentDepth para sairmos do ciclo
+                else
+                {
+                    this.CurrentDepth -= 1;
+                }
+                
             }
             this.TotalActionCombinationsProcessed = processedActions;
 

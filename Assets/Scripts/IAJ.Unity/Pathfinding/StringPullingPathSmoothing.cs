@@ -19,7 +19,7 @@ public class StringPullingPathSmoothing : MonoBehaviour {
         GlobalPath smoothedPath = new GlobalPath();
 
         smoothedPath.PathPositions.Add(positions[0]);
-
+        /////////PATHNODES FALTA ADICIONAR
         while (i + 1 < positions.Count)
         {
             int j = i + 1;

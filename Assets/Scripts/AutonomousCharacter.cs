@@ -90,14 +90,14 @@ namespace Assets.Scripts
             //initialization of the GOB decision making
             //let's start by creating 4 main goals
 
-            this.SurviveGoal = new Goal(SURVIVE_GOAL, 0.0f);
+            this.SurviveGoal = new Goal(SURVIVE_GOAL, 2.0f);
 
             this.GainXPGoal = new Goal(GAIN_XP_GOAL, 1.0f)
             {
                 ChangeRate = 0.1f
             };
 
-            this.GetRichGoal = new Goal(GET_RICH_GOAL, 2.0f)
+            this.GetRichGoal = new Goal(GET_RICH_GOAL, 1.0f)
             {
                 InsistenceValue = 5.0f,
                 ChangeRate = 0.2f
@@ -222,11 +222,11 @@ namespace Assets.Scripts
                 {
                     //lets smooth out the Path
                     this.startPosition = this.Character.KinematicData.position;
-                    //this.currentSmoothedSolution = StringPullingPathSmoothing.SmoothPath(this.Character.KinematicData.position, this.currentSolution);
-                    //this.currentSmoothedSolution.CalculateLocalPathsFromPathPositions(this.Character.KinematicData.position);
-                    this.currentSolution.CalculateLocalPathsFromPathPositions(this.Character.KinematicData.position);
-
-                    this.Character.Movement = new DynamicFollowPath(this.Character.KinematicData, this.currentSolution)
+                    this.currentSmoothedSolution = StringPullingPathSmoothing.SmoothPath(this.Character.KinematicData.position, this.currentSolution);
+                    this.currentSmoothedSolution.CalculateLocalPathsFromPathPositions(this.Character.KinematicData.position);
+                    //this.currentSolution.CalculateLocalPathsFromPathPositions(this.Character.KinematicData.position);
+                    //ESTRANHO
+                    this.Character.Movement = new DynamicFollowPath(this.Character.KinematicData, this.currentSmoothedSolution)
                     {
                         MaxAcceleration = 200.0f,
                         MaxSpeed = 40.0f
