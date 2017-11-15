@@ -32,7 +32,7 @@ namespace Assets.Scripts.IAJ.Unity.Pathfinding.Path
 			{
 				return this.StartPosition;
 			}
-			else return this.StartPosition + this.LineVector*(param-this.StartParam);
+            else return this.StartPosition + this.LineVector * (param - this.StartParam) / this.ParamSize;
         }
 
         public override bool PathEnd(float param)

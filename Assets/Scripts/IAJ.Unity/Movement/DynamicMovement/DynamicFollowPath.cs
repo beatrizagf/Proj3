@@ -22,7 +22,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             this.Character = character;
             this.Path = path;
             this.CurrentParam = 0.0f;
-            this.PathOffset = 2.0f;
+            this.PathOffset = 5.0f;
             this.EmptyMovementOutput = new MovementOutput();
         }
 
