@@ -46,6 +46,19 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             this.InitialWorldModel.Initialize();
         }
 
+        public void ShuffleActions()
+        {
+            int size = this.Actions.Count;
+
+            for (int i = 0; i < size; i++)
+            {
+                Action swap = this.Actions[i];
+                int slot = UnityEngine.Random.Range(0, size - 1);
+                this.Actions[i] = this.Actions[slot];
+                this.Actions[slot] = swap;
+            }
+        }
+
         public Action ChooseAction()
         {
 			
@@ -62,6 +75,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 
             while (this.CurrentDepth >= 0)
             {
+                ShuffleActions();
+
                 if (this.InProgress == false || processedActions > this.ActionCombinationsProcessedPerFrame)
                     return null;
 
