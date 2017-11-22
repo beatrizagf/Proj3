@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Assets.Scripts.DecisionMakingActions;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
+using Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS;
 using Assets.Scripts.IAJ.Unity.Movement.DynamicMovement;
 using Assets.Scripts.IAJ.Unity.Pathfinding;
 using RAIN.Navigation;
@@ -32,7 +33,7 @@ namespace Assets.Scripts
         public Text BestDiscontentmentText;
         public Text ProcessedActionsText;
         public Text BestActionText;
-        public bool MCTSActive;
+        public bool MCTSActive=true;
 
 
         public Goal BeQuickGoal { get; private set; }
@@ -44,6 +45,7 @@ namespace Assets.Scripts
         public Action CurrentAction { get; private set; }
         public DynamicCharacter Character { get; private set; }
         public DepthLimitedGOAPDecisionMaking GOAPDecisionMaking { get; set; }
+        public MCTS MCTSDecisionMaking { get; set; }
         public AStarPathfinding AStarPathFinding;
 
         //private fields for internal use only
@@ -153,7 +155,15 @@ namespace Assets.Scripts
             }
 
             var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
-            this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals);
+            //escolher entre MCTS ou GOAP
+            if (MCTSActive)
+            {
+                this.MCTSDecisionMaking = new MCTS(worldModel);
+            }
+            else
+            {
+                this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel, this.Actions, this.Goals);
+            }
         }
 
         void Update()
@@ -199,11 +209,22 @@ namespace Assets.Scripts
 
                 //initialize Decision Making Proccess
                 this.CurrentAction = null;
-                this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
+                //escolher entre MCTS ou GOAP
+                if (MCTSActive){
+                    this.MCTSDecisionMaking.InitializeMCTSearch();
+                } else {
+                    this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
+                }
             }
 
-            
-            this.UpdateDLGOAP();
+            if (MCTSActive)
+            {
+                this.UpdateMCTS();
+            }
+            else
+            {
+                this.UpdateDLGOAP();
+            }
             
 
             if(this.CurrentAction != null)
@@ -279,6 +300,38 @@ namespace Assets.Scripts
                 this.BestActionText.text = "Best Action Sequence:\nNone";
             }
         }
+
+        //MCTS
+        private void UpdateMCTS()
+        {
+            if (this.MCTSDecisionMaking.InProgress)
+            {
+                //choose an action using the GOB Decision Making process
+                var action = this.MCTSDecisionMaking.Run();
+                if (action != null)
+                {
+                    this.CurrentAction = action;
+                }
+            }
+
+            this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTSDecisionMaking.TotalProcessingTime.ToString("F");
+            this.ProcessedActionsText.text = "Best Action Sequence: " + this.MCTSDecisionMaking.BestActionSequence.ToString();
+
+            if (this.MCTSDecisionMaking.BestFirstChild.Action != null)
+            {
+                var actionText = "";
+                foreach (var action in this.MCTSDecisionMaking.BestActionSequence)
+                {
+                    actionText += "\n" + action.Name;
+                }
+                this.BestActionText.text = "Best Action Sequence: " + actionText;
+            }
+            else
+            {
+                this.BestActionText.text = "Best Action Sequence:\nNone";
+            }
+        }
+
 
         public void StartPathfinding(Vector3 targetPosition)
         {
