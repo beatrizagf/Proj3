@@ -90,9 +90,9 @@ namespace Assets.Scripts
             //initialization of the GOB decision making
             //let's start by creating 4 main goals
 
-            this.SurviveGoal = new Goal(SURVIVE_GOAL, 2.0f);
+            this.SurviveGoal = new Goal(SURVIVE_GOAL, 1.0f);
 
-            this.GainXPGoal = new Goal(GAIN_XP_GOAL, 1.0f)
+            this.GainXPGoal = new Goal(GAIN_XP_GOAL, 5.0f)
             {
                 ChangeRate = 0.1f
             };
@@ -153,7 +153,23 @@ namespace Assets.Scripts
             }
 
             var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
+
+            //Para ele não ignorar os monstros
+            ShuffleActions();
             this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel,this.Actions,this.Goals);
+        }
+
+        public void ShuffleActions()
+        {
+            int size = this.Actions.Count;
+
+            for (int i = 0; i < size; i++)
+            {
+                Action swap = this.Actions[i];
+                int slot = UnityEngine.Random.Range(0, size - 1);
+                this.Actions[i] = this.Actions[slot];
+                this.Actions[slot] = swap;
+            }
         }
 
         void Update()
