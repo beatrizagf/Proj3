@@ -42,18 +42,15 @@ namespace Assets.Scripts.DecisionMakingActions
 		public override bool CanExecute()
 		{
             //TODO: implement
+            if (!base.CanExecute()) return false;
             if (this.Target.tag.Equals("Dragon"))
                 return false;
-
-            if (!base.CanExecute()) return false;
             return this.Character.GameManager.characterData.Mana > 5;
         }
 
 		public override bool CanExecute(WorldModel worldModel)
 		{
             //TODO: implement
-
-
             if (!base.CanExecute(worldModel)) return false;
             if (this.Target.tag.Equals("Dragon"))
                 return false;
