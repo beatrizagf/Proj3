@@ -33,8 +33,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
-            this.MaxIterations = 100;
-            this.MaxIterationsProcessedPerFrame = 10;
+            this.MaxIterations = 10000;
+            this.MaxIterationsProcessedPerFrame = 100;
             this.RandomGenerator = new System.Random();
         }
 
@@ -107,7 +107,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 }
                 else
                 {
-                    currentNode = BestChild(currentNode);
+                    currentNode = BestUCTChild(currentNode);
                 }
                 this.MaxSelectionDepthReached++;
             }
@@ -164,6 +164,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             //TODO: implement
             MCTSNode bestChild = new MCTSNode(node.State);
             float bestChildValue = float.MinValue;
+
             for (int i = 0; i < node.ChildNodes.Count; i++)
             {
                 if ((node.ChildNodes[i].Q + 2 * (Mathf.Log(node.N) / node.ChildNodes[i].N)) > bestChildValue)

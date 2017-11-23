@@ -306,7 +306,7 @@ namespace Assets.Scripts
         {
             if (this.MCTSDecisionMaking.InProgress)
             {
-                //choose an action using the GOB Decision Making process
+                //choose an action using MCTS
                 var action = this.MCTSDecisionMaking.Run();
                 if (action != null)
                 {

@@ -25,7 +25,14 @@ namespace Assets.Scripts.GameManager
 
         public override WorldModel GenerateChildWorldModel()
         {
-            return new FutureStateWorldModel(this);
+            FutureStateWorldModel copy = new FutureStateWorldModel(this)
+            {
+                NextPlayer = this.NextPlayer,
+                NextEnemyAction = this.NextEnemyAction,
+                NextEnemyActions = this.NextEnemyActions
+            };
+
+            return copy;
         }
 
         public override bool IsTerminal()
@@ -37,7 +44,7 @@ namespace Assets.Scripts.GameManager
             return HP <= 0 ||  time >= 200 || money == 25;
         }
 
-        public override float GetScore()
+        /*public override float GetScore()
         {
             int money = (int)this.GetProperty(Properties.MONEY);
 
@@ -46,6 +53,14 @@ namespace Assets.Scripts.GameManager
                 return 1.0f;
             }
             else return 0.0f;
+        }*/
+
+        public override float GetScore()
+        {
+            //if ((float)this.GetProperty(Properties.HP) > 0)
+                return (float) (int) this.GetProperty(Properties.MONEY);
+            //else
+                //return -25;
         }
 
         public override int GetNextPlayer()

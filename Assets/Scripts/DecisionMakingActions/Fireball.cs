@@ -42,7 +42,7 @@ namespace Assets.Scripts.DecisionMakingActions
 		public override bool CanExecute()
 		{
             //TODO: implement
-            if (!this.Target.tag.Equals("Dragon"))
+            if (this.Target.tag.Equals("Dragon"))
                 return false;
 
             if (!base.CanExecute()) return false;
@@ -52,7 +52,7 @@ namespace Assets.Scripts.DecisionMakingActions
 		public override bool CanExecute(WorldModel worldModel)
 		{
             //TODO: implement
-            if (!this.Target.tag.Equals("Dragon"))
+            if (this.Target.tag.Equals("Dragon"))
                 return false;
 
                 if (!base.CanExecute(worldModel)) return false;
