@@ -3,6 +3,8 @@ using Assets.Scripts.GameManager;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Assets.Scripts.DecisionMakingActions;
+using System.Linq;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 {
@@ -18,6 +20,14 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public MCTSNode BestFirstChild { get; set; }
         public List<GOB.Action> BestActionSequence { get; private set; }
 
+        //pesos para heuristica
+        // public float WHp {get; set;}
+        // public float WMana { get; set;}
+        private float[] weights = new float[2];
+        private const int WMoney = 0;
+        private const int WTime = 2;
+        private const int WXP = 1;
+        private const int WLevel = 3;
 
         private int CurrentIterations { get; set; }
         private int CurrentIterationsInFrame { get; set; }
@@ -26,7 +36,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         private CurrentStateWorldModel CurrentStateWorldModel { get; set; }
         private MCTSNode InitialNode { get; set; }
         private System.Random RandomGenerator { get; set; }
-        
         
 
         public MCTS(CurrentStateWorldModel currentStateWorldModel)
@@ -56,6 +65,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.InProgress = true;
             this.BestFirstChild = null;
             this.BestActionSequence = new List<GOB.Action>();
+            ///valor aos pesos
+            //this.weights[WTime] = -3f;
+            this.weights[WXP] = 1.5f;
+            this.weights[WMoney] = 1.5f;
+           // this.weights[WLevel] = 2f;
         }
 
         public GOB.Action Run()
@@ -120,7 +134,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             FutureStateWorldModel state = (FutureStateWorldModel)initialPlayoutState.GenerateChildWorldModel();
             while (!state.IsTerminal())
             {
+                //escolher entre MCTS normal e MCTS bias
                 ChooseRandom(state).ApplyActionEffects(state);
+                //ChooseBias(state).ApplyActionEffects(state);
                 state.CalculateNextPlayer();
                 this.MaxPlayoutDepthReached++;
             }
@@ -203,11 +219,69 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             GOB.Action[] actions = state.GetExecutableActions();
             return actions[RandomGenerator.Next() % actions.Length];
         }
-
+        
         private GOB.Action ChooseBias(WorldModel state)
         {
             GOB.Action[] actions = state.GetExecutableActions();
-            return null;
+            //GOB.Action[] new_actions = new GOB.Action[actions.Length];
+
+            int[] features = new int[2];
+
+            int size = features.Length;
+            float H = 0;
+            float[] exp = new float[actions.Length];    //array com as exponenciais ja calculadas
+            float[] P = new float[actions.Length];    //array com as probabilidades ja calculadas para escolher a melhor
+
+
+            for (int j = 0; j < actions.Length; j++) {
+                float h = 0;
+
+                if (actions[j] is SwordAttack && (int)state.GetProperty(Properties.HP) + ((SwordAttack)actions[j]).hpChange <= 0)
+                {
+                    //actions = actions.Where(val => val != action).ToArray();  //para a nao optimizacao
+                    exp[j] = 0;
+                    continue;  //do for, para passa a proxima accao
+                }
+                else
+                {
+                    FutureStateWorldModel possibleState = (FutureStateWorldModel)state.GenerateChildWorldModel();
+                    actions[j].ApplyActionEffects(possibleState);
+                    possibleState.CalculateNextPlayer();
+
+                    features[WMoney] = (int)possibleState.GetProperty(Properties.MONEY);
+                    //features[WTime] = (int) (float) possibleState.GetProperty(Properties.TIME);
+                    features[WXP] = (int)possibleState.GetProperty(Properties.XP);
+                    //features[WLevel] = (int)possibleState.GetProperty(Properties.LEVEL);
+
+                    for (int i = 0; i < size; i++)
+                    {
+                        h += features[i] * weights[i];   //cada peso para uma accao
+
+                    }
+
+                    exp[j] = Mathf.Exp(h);    //queremos guardar logo a exponencial para nao ter de calcular outra vez
+                    H += Mathf.Exp(h);
+                }
+            }
+
+            if (H == 0)
+            {
+                return actions[0];
+            }
+            else
+            {
+                P[0] = exp[0] / H;      //o primeiro nao acumula
+                for (int j = 1; j < actions.Length; j++)
+                {
+                    P[j] = P[j-1]+exp[j] / H;   //para ser cumulativo
+
+                }
+
+                double rand = RandomGenerator.NextDouble();
+
+                //prob maior mais pequena que o random
+                return actions[Array.FindIndex(P, val => val >= rand)];
+            }
 
         }
 

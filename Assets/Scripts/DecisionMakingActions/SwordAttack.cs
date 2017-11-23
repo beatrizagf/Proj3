@@ -6,7 +6,7 @@ namespace Assets.Scripts.DecisionMakingActions
 {
     public class SwordAttack : WalkToTargetAndExecuteAction
     {
-        private int hpChange;
+        public int hpChange { get; set; }
         private int xpChange;
 
         public SwordAttack(AutonomousCharacter character, GameObject target) : base("SwordAttack",character,target)
