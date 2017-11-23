@@ -136,6 +136,9 @@ namespace Assets.Scripts
                 this.Actions.Add(new GetHealthPotion(this, potion));
             }
 
+            this.Actions.Add(new LevelUp(this));
+
+
             foreach (var enemy in GameObject.FindGameObjectsWithTag("Skeleton"))
             {
                 this.Actions.Add(new SwordAttack(this, enemy));
@@ -151,7 +154,7 @@ namespace Assets.Scripts
             foreach (var enemy in GameObject.FindGameObjectsWithTag("Dragon"))
             {
                 this.Actions.Add(new SwordAttack(this, enemy));
-                this.Actions.Add(new Fireball(this, enemy));
+                //this.Actions.Add(new Fireball(this, enemy));
             }
 
             var worldModel = new CurrentStateWorldModel(this.GameManager, this.Actions, this.Goals);
