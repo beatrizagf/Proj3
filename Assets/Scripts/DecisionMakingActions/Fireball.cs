@@ -52,10 +52,11 @@ namespace Assets.Scripts.DecisionMakingActions
 		public override bool CanExecute(WorldModel worldModel)
 		{
             //TODO: implement
+
+
+            if (!base.CanExecute(worldModel)) return false;
             if (this.Target.tag.Equals("Dragon"))
                 return false;
-
-                if (!base.CanExecute(worldModel)) return false;
             var mana = (int)worldModel.GetProperty(Properties.MANA);
             return mana > 5;
         }

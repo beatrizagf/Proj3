@@ -315,9 +315,9 @@ namespace Assets.Scripts
             }
 
             this.TotalProcessingTimeText.text = "Process. Time: " + this.MCTSDecisionMaking.TotalProcessingTime.ToString("F");
-            this.ProcessedActionsText.text = "Best Action Sequence: " + this.MCTSDecisionMaking.BestActionSequence.ToString();
+            //this.ProcessedActionsText.text = "Best Action Sequence: " + this.MCTSDecisionMaking.BestActionSequence.ToString();
 
-            if (this.MCTSDecisionMaking.BestFirstChild.Action != null)
+            if (this.MCTSDecisionMaking.BestFirstChild != null)
             {
                 var actionText = "";
                 foreach (var action in this.MCTSDecisionMaking.BestActionSequence)

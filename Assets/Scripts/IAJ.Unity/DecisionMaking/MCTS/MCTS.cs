@@ -34,7 +34,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
             this.MaxIterations = 10000;
-            this.MaxIterationsProcessedPerFrame = 100;
+            this.MaxIterationsProcessedPerFrame = 50;
             this.RandomGenerator = new System.Random();
         }
 
@@ -81,12 +81,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.InProgress = false;
             this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
             
-            for (MCTSNode best = BestChild(this.InitialNode); best.ChildNodes.Count != 0; best = BestChild(best))
+            for (MCTSNode best = BestUCTChild(this.InitialNode); best.ChildNodes.Count != 0; best = BestUCTChild(best))
             {
                 this.BestActionSequence.Add(best.Action);
             }
 
-            BestFirstChild = BestChild(this.InitialNode);
+            BestFirstChild = BestUCTChild(this.InitialNode);
             return BestFirstChild.Action;
         }
 
@@ -167,9 +167,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             for (int i = 0; i < node.ChildNodes.Count; i++)
             {
-                if ((node.ChildNodes[i].Q + 2 * (Mathf.Log(node.N) / node.ChildNodes[i].N)) > bestChildValue)
+                float childValue = node.ChildNodes[i].Q/node.ChildNodes[i].N + C * Mathf.Sqrt(Mathf.Log(node.N) / node.ChildNodes[i].N);
+                if (childValue > bestChildValue)
                 {
-                    bestChildValue = node.ChildNodes[i].Q + 2 * (Mathf.Log(node.N) / node.ChildNodes[i].N);
+                    bestChildValue = childValue;
                     bestChild = node.ChildNodes[i];
                 }
 
