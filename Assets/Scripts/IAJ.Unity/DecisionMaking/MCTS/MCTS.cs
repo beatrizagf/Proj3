@@ -120,8 +120,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             FutureStateWorldModel state = (FutureStateWorldModel)initialPlayoutState.GenerateChildWorldModel();
             while (!state.IsTerminal())
             {
-                GOB.Action[] actions = state.GetExecutableActions();
-                actions[RandomGenerator.Next() % actions.Length].ApplyActionEffects(state);
+                ChooseRandom(state).ApplyActionEffects(state);
+                state.CalculateNextPlayer();
                 this.MaxPlayoutDepthReached++;
             }
 
@@ -146,6 +146,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             //TODO: implement
             WorldModel worldmodel = CurrentStateWorldModel.GenerateChildWorldModel();
             action.ApplyActionEffects(worldmodel);
+            worldmodel.CalculateNextPlayer();
             MCTSNode n = new MCTSNode(worldmodel)
             {
                 Action = action,
@@ -194,5 +195,19 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             return bestChild;
 
         }
+
+        private GOB.Action ChooseRandom(WorldModel state)
+        {
+            GOB.Action[] actions = state.GetExecutableActions();
+            return actions[RandomGenerator.Next() % actions.Length];
+        }
+
+        private GOB.Action ChooseBias(WorldModel state)
+        {
+            GOB.Action[] actions = state.GetExecutableActions();
+            return null;
+
+        }
+
     }
 }
