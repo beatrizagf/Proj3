@@ -243,7 +243,7 @@ namespace Assets.Scripts.GameManager
 
         public bool InPotionRange(GameObject potion)
         {
-            return this.CheckRange(potion, 9.0f);
+            return this.CheckRange(potion, 10.0f);
         }
     }
 }

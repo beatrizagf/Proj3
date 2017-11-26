@@ -66,10 +66,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.BestFirstChild = null;
             this.BestActionSequence = new List<GOB.Action>();
             ///valor aos pesos
-            //this.weights[WTime] = -3f;
-            this.weights[WXP] = 1.5f;
-            this.weights[WMoney] = 1.5f;
-           // this.weights[WLevel] = 2f;
+            //this.weights[WTime] = -0.9f;
+            this.weights[WXP] = 0.1f;
+            this.weights[WMoney] = 0.1f;
+            //this.weights[WLevel] = 0.6f;
         }
 
         public GOB.Action Run()
@@ -135,8 +135,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             while (!state.IsTerminal())
             {
                 //escolher entre MCTS normal e MCTS bias
-                ChooseRandom(state).ApplyActionEffects(state);
-                //ChooseBias(state).ApplyActionEffects(state);
+                //ChooseRandom(state).ApplyActionEffects(state);
+                ChooseBias(state).ApplyActionEffects(state);
                 state.CalculateNextPlayer();
                 this.MaxPlayoutDepthReached++;
             }

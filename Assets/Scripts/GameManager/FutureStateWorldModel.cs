@@ -58,7 +58,10 @@ namespace Assets.Scripts.GameManager
         public override float GetScore()
         {
             //if ((float)this.GetProperty(Properties.HP) > 0)
-                return (float) (int) this.GetProperty(Properties.MONEY);
+            float time = (float)this.GetProperty(Properties.TIME);
+            int money = (int)this.GetProperty(Properties.MONEY);
+
+            return money;
             //else
                 //return -25;
         }
