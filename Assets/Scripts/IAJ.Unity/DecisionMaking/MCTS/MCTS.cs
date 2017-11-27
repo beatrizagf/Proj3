@@ -159,9 +159,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         private MCTSNode Expand(MCTSNode parent, GOB.Action action)
         {
-            //TODO: implement
-            WorldModel worldmodel = CurrentStateWorldModel.GenerateChildWorldModel();
-            action.ApplyActionEffects(worldmodel);
+			//TODO: implement
+			//WorldModel worldmodel = CurrentStateWorldModel.GenerateChildWorldModel();
+			WorldModel worldmodel = parent.State.GenerateChildWorldModel();
+			action.ApplyActionEffects(worldmodel);
             worldmodel.CalculateNextPlayer();
             MCTSNode n = new MCTSNode(worldmodel)
             {
