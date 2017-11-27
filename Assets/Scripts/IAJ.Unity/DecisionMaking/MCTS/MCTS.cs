@@ -280,11 +280,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 }
                 if (ChestDead(state, actions[j], "Skeleton1", "Chest1") || ChestDead(state, actions[j], "Skeleton2", "Chest4")
                  || ChestDead(state, actions[j], "Orc1", "Chest3") || ChestDead(state, actions[j], "Orc2", "Chest2") || ChestDead(state, actions[j], "Dragon", "Chest5")) {
-                    h = 99999;
+                    h = 91;
                     exp[j] = Mathf.Exp(h); 
                     H += Mathf.Exp(h);
+                    continue;  //do for, para passa a proxima accao
                 }
-              
+
 
 
 
