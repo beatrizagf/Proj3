@@ -27,7 +27,7 @@ namespace Assets.Scripts.GameManager
         public List<GameObject> skeletons;
         public List<GameObject> orcs;
         public List<GameObject> dragons;
-        public List<GameObject> enemies;
+        public List<GameObject> enemies { get; set; }
 
         public CharacterData characterData;
         public bool WorldChanged { get; set; }

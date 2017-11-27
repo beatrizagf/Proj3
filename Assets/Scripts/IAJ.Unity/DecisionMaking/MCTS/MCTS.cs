@@ -223,10 +223,43 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         private bool ChestDead(FutureStateWorldModel state, GOB.Action action, string enemyName, string chestName)
         {
+            //bool cond1 = !(bool)state.GetProperty(enemyName);
+            bool cond1 = GameObject.Find(enemyName) == null;
+            bool cond2 = GameObject.Find(chestName) != null;
+            //bool cond2 = (bool)state.GetProperty(chestName);
+            bool cond3 = action is PickUpChest;
+            bool cond4 = action is PickUpChest && ((PickUpChest)action).Target.name.Equals(chestName);
+            /*
+            if (cond3)
+                cond4 = action is PickUpChest && ((PickUpChest)action).Target.tag.Equals(chestName);
+            else
+                cond4 = false;
+                */
+            return cond1 && cond2 && cond3 && cond4;
+
             //return !(bool)state.GetProperty(enemyName) && (bool)state.GetProperty(chestName) && action is PickUpChest && ((PickUpChest)action).Target.tag.Equals(chestName);
 
         }
-        
+        /*
+        private bool ChestReallyDead(FutureStateWorldModel state, GOB.Action action, string enemyName, string chestName)
+        {
+            bool cond1 = !(bool)state.GetProperty(enemyName);
+            bool cond1b = GameObject.Find(enemyName)
+            bool cond2 = (bool)state.GetProperty(chestName);
+            bool cond3 = action is PickUpChest;
+            bool cond4 = action is PickUpChest && ((PickUpChest)action).Target.tag.Equals(chestName);
+            /*
+            if (cond3)
+                cond4 = action is PickUpChest && ((PickUpChest)action).Target.tag.Equals(chestName);
+            else
+                cond4 = false;
+                */
+            //return cond1 && cond2 && cond3 && cond4;
+
+            //return !(bool)state.GetProperty(enemyName) && (bool)state.GetProperty(chestName) && action is PickUpChest && ((PickUpChest)action).Target.tag.Equals(chestName);
+
+        //}
+
         private GOB.Action ChooseBias(FutureStateWorldModel state)
         {
             GOB.Action[] actions = state.GetExecutableActions();
@@ -251,6 +284,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                     exp[j] = Mathf.Exp(h); 
                     H += Mathf.Exp(h);
                 }
+              
 
 
 

@@ -63,13 +63,13 @@ namespace Assets.Scripts.GameManager
             int HP = (int)this.GetProperty(Properties.HP);
 
             if (HP <= 0) return -25;
-            //return (money/(time*0.1f));
+            return (money/(time*0.1f));
 
             //return (money +HP)/time;
             //return (money + 1/time);
             //return money;
             //if (money == 0) return 0;
-            return money + ((200-time)/10);
+           // return money + ((200-time)/10);
             //return money + ((200-time)/200);
         }
 
