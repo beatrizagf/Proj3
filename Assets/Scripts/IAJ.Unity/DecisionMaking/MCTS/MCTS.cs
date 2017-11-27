@@ -43,7 +43,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             this.InProgress = false;
             this.CurrentStateWorldModel = currentStateWorldModel;
             this.MaxIterations = 10000;
-            this.MaxIterationsProcessedPerFrame = 500;
+            this.MaxIterationsProcessedPerFrame = 2000;
             this.RandomGenerator = new System.Random();
         }
 
@@ -214,34 +214,45 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         }
 
-        private GOB.Action ChooseRandom(WorldModel state)
+        private GOB.Action ChooseRandom(FutureStateWorldModel state)
         {
             GOB.Action[] actions = state.GetExecutableActions();
             return actions[RandomGenerator.Next() % actions.Length];
         }
+
+        private bool ChestDead(FutureStateWorldModel state, GOB.Action action, string enemyName, string chestName)
+        {
+            //return !(bool)state.GetProperty(enemyName) && (bool)state.GetProperty(chestName) && action is PickUpChest && ((PickUpChest)action).Target.tag.Equals(chestName);
+
+        }
         
-        private GOB.Action ChooseBias(WorldModel state)
+        private GOB.Action ChooseBias(FutureStateWorldModel state)
         {
             GOB.Action[] actions = state.GetExecutableActions();
-            //GOB.Action[] new_actions = new GOB.Action[actions.Length];
-
             int[] features = new int[2];
 
             int size = features.Length;
-            float H = 0;
-            float[] exp = new float[actions.Length];    //array com as exponenciais ja calculadas
-            float[] P = new float[actions.Length];    //array com as probabilidades ja calculadas para escolher a melhor
-
+            double H = 0;
+            double[] exp = new double[actions.Length];    //array com as exponenciais ja calculadas
+            double[] P = new double[actions.Length];    //array com as probabilidades ja calculadas para escolher a melhor
 
             for (int j = 0; j < actions.Length; j++) {
                 float h = 0;
 
-                if (actions[j] is SwordAttack && (int)state.GetProperty(Properties.HP) + ((SwordAttack)actions[j]).hpChange <= 0)
-                {
+                if (actions[j] is SwordAttack && (int)state.GetProperty(Properties.HP) + ((SwordAttack)actions[j]).hpChange <= 0) {
                     //actions = actions.Where(val => val != action).ToArray();  //para a nao optimizacao
                     exp[j] = 0;
                     continue;  //do for, para passa a proxima accao
                 }
+                if (ChestDead(state, actions[j], "Skeleton1", "Chest1") || ChestDead(state, actions[j], "Skeleton2", "Chest4")
+                 || ChestDead(state, actions[j], "Orc1", "Chest3") || ChestDead(state, actions[j], "Orc2", "Chest2") || ChestDead(state, actions[j], "Dragon", "Chest5")) {
+                    h = 99999;
+                    exp[j] = Mathf.Exp(h); 
+                    H += Mathf.Exp(h);
+                }
+
+
+
                 else
                 {
                     FutureStateWorldModel possibleState = (FutureStateWorldModel)state.GenerateChildWorldModel();
@@ -253,30 +264,20 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                     features[WXP] = (int)possibleState.GetProperty(Properties.XP);
                     //features[WLevel] = (int)possibleState.GetProperty(Properties.LEVEL);
 
-                    for (int i = 0; i < size; i++)
-                    {
+                    for (int i = 0; i < size; i++) {
                         h += features[i] * weights[i];   //cada peso para uma accao
-
                     }
-
                     exp[j] = Mathf.Exp(h);    //queremos guardar logo a exponencial para nao ter de calcular outra vez
                     H += Mathf.Exp(h);
                 }
             }
 
-            if (H == 0)
-            {
-                return actions[0];
-            }
-            else
-            {
+            if (H == 0){return actions[0];}
+            else{
                 P[0] = exp[0] / H;      //o primeiro nao acumula
-                for (int j = 1; j < actions.Length; j++)
-                {
+                for (int j = 1; j < actions.Length; j++){
                     P[j] = P[j-1]+exp[j] / H;   //para ser cumulativo
-
                 }
-
                 double rand = RandomGenerator.NextDouble();
 
                 //prob maior mais pequena que o random

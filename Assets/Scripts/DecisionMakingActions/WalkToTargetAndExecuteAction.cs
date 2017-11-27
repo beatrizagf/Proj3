@@ -9,7 +9,7 @@ namespace Assets.Scripts.DecisionMakingActions
     {
         protected AutonomousCharacter Character { get; set; }
 
-        protected GameObject Target { get; set; }
+        public GameObject Target { get; set; }
 
         protected WalkToTargetAndExecuteAction(string actionName, AutonomousCharacter character, GameObject target) : base(actionName + "(" + target.name + ")")
         {
@@ -72,6 +72,10 @@ namespace Assets.Scripts.DecisionMakingActions
             worldModel.SetProperty(Properties.TIME, time + duration);
 
             worldModel.SetProperty(Properties.POSITION, Target.transform.position);
+        }
+
+        public bool TargetTagEquals(string tagName) {
+            return Target.tag.Equals(tagName);
         }
     }
 }

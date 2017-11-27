@@ -238,7 +238,7 @@ namespace Assets.Scripts.GameManager
 
         public bool InChestRange(GameObject chest)
         {
-            return this.CheckRange(chest, 9.0f);
+            return this.CheckRange(chest, 12.0f);
         }
 
         public bool InPotionRange(GameObject potion)

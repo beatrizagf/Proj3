@@ -7,7 +7,7 @@ namespace Assets.Scripts.GameManager
 {
     public class FutureStateWorldModel : WorldModel
     {
-        protected GameManager GameManager { get; set; }
+        public GameManager GameManager { get; set; }
         protected int NextPlayer { get; set; }
         protected Action NextEnemyAction { get; set; }
         protected Action[] NextEnemyActions { get; set; }
@@ -60,10 +60,17 @@ namespace Assets.Scripts.GameManager
             //if ((float)this.GetProperty(Properties.HP) > 0)
             float time = (float)this.GetProperty(Properties.TIME);
             int money = (int)this.GetProperty(Properties.MONEY);
+            int HP = (int)this.GetProperty(Properties.HP);
 
-            return money;
-            //else
-                //return -25;
+            if (HP <= 0) return -25;
+            //return (money/(time*0.1f));
+
+            //return (money +HP)/time;
+            //return (money + 1/time);
+            //return money;
+            //if (money == 0) return 0;
+            return money + ((200-time)/10);
+            //return money + ((200-time)/200);
         }
 
         public override int GetNextPlayer()
@@ -85,7 +92,7 @@ namespace Assets.Scripts.GameManager
                     this.NextPlayer = 1;
                     this.NextEnemyAction = new SwordAttack(this.GameManager.autonomousCharacter, enemy);
                     this.NextEnemyActions = new Action[] { this.NextEnemyAction };
-                    return; 
+                    return;
                 }
             }
             this.NextPlayer = 0;
